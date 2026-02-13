@@ -30,19 +30,22 @@ export async function createCourse(data: CourseData) {
 
     if (!user) throw new Error("Could not fetch user");
 
-    const [course] = await db
-        .insert(courses)
-        .values({
-            userId: user.id,
-            title: data.title,
-            prompt: data.prompt,
-            level: data.level,
-            status: "generating",
-            content: {},
-        })
-        .returning();
-
-    return course;
+    try {
+        return await db
+            .insert(courses)
+            .values({
+                userId: user.id,
+                title: data.title,
+                prompt: data.prompt,
+                level: data.level,
+                status: "generating",
+                content: {},
+            })
+            .returning();
+    } catch (error) {
+        console.log('error: ', error)
+        throw new Error("Could not insert course")
+    }
 }
 
 export async function getMyCourses() {
